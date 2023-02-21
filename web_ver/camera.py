@@ -1,5 +1,4 @@
 import glob
-
 import streamlit as st
 import cv2
 from datetime import datetime

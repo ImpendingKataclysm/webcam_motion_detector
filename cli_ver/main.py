@@ -3,6 +3,7 @@ import glob
 import cv2
 import time
 from emailer import send_email
+from empty_folder import delete_images
 
 video = cv2.VideoCapture(0)
 time.sleep(1)
@@ -53,6 +54,7 @@ while True:
 
     if status_list[0] == 1 and status_list[1] == 0:
         send_email(img_with_obj)
+        delete_images()
 
     cv2.imshow("Video", frame)
 
