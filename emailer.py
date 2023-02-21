@@ -1,2 +1,9 @@
+import streamlit as st
+
+
 def send_email():
-    print("Email was sent")
+    # Console
+    # print("Email was sent")
+
+    # Web
+    st.write("Sending email...")

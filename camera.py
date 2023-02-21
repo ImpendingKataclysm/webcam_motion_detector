@@ -1,6 +1,7 @@
 import streamlit as st
-from datetime import datetime
 import cv2
+from datetime import datetime
+from emailer import send_email
 
 st.title("Motion Detector")
 start = st.button("Start Camera", key="start")
@@ -20,6 +21,15 @@ if start:
         timer_frame = cv2.cvtColor(timer_frame, cv2.COLOR_BGR2RGB)
         now = datetime.now()
 
+        cv2.putText(img=timer_frame, text=now.strftime("%a %d/%m/%y"),
+                    org=(30, 80), fontFace=cv2.FONT_HERSHEY_PLAIN,
+                    fontScale=2, color=(255, 255, 255), thickness=2,
+                    lineType=cv2.LINE_AA)
+        cv2.putText(img=timer_frame, text=now.strftime("%H:%M:%S"),
+                    org=(30, 140), fontFace=cv2.FONT_HERSHEY_PLAIN,
+                    fontScale=2, color=(255, 255, 255), thickness=2,
+                    lineType=cv2.LINE_AA)
+
         # Gray/blurred frames for motion detection
         gray_frame = cv2.cvtColor(timer_frame, cv2.COLOR_RGB2GRAY)
         gray_frame_gau = cv2.GaussianBlur(gray_frame, (21, 21), 0)
@@ -37,19 +47,22 @@ if start:
         contours, check2 = cv2.findContours(dil_frame, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         for contour in contours:
-            if cv2.contourArea(contour) < 500:
+            if cv2.contourArea(contour) < 10000:
                 continue
 
             x, y, w, h = cv2.boundingRect(contour)
             rectangle = cv2.rectangle(timer_frame, (x, y), (x+w, y+h), (0, 200, 100), 3)
 
-        cv2.putText(img=timer_frame, text=now.strftime("%a %d/%m/%y"),
-                    org=(30, 80), fontFace=cv2.FONT_HERSHEY_PLAIN,
-                    fontScale=2, color=(255, 255, 255), thickness=2,
-                    lineType=cv2.LINE_AA)
-        cv2.putText(img=timer_frame, text=now.strftime("%H:%M:%S"),
-                    org=(30, 140), fontFace=cv2.FONT_HERSHEY_PLAIN,
-                    fontScale=2, color=(255, 255, 255), thickness=2,
-                    lineType=cv2.LINE_AA)
+            # Check if there are moving objects
+            if rectangle.any():
+                status = 1
+
+        # Compare current frame with previous one
+        status_list.append(status)
+        status_list = status_list[-2:]
+
+        # Send email if the previous frame had an object and the current one does not
+        if status_list[0] == 1 and status_list[1] == 0:
+            send_email()
 
         st_image.image(timer_frame)
