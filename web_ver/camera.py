@@ -4,6 +4,7 @@ import cv2
 from datetime import datetime
 from emailer import send_email
 from empty_folder import delete_images
+from threading import Thread
 
 st.title("Motion Detector")
 start = st.button("Start Camera", key="start")
@@ -73,7 +74,12 @@ if start:
 
         # Send email if the previous frame had an object and the current one does not
         if status_list[0] == 1 and status_list[1] == 0:
-            send_email(img_with_obj)
-            delete_images()
+            email_thread = Thread(target=send_email, args=(img_with_obj, ))
+            email_thread.daemon = True
+            delete_thread = Thread(target=delete_images)
+            delete_thread.daemon = True
+
+            email_thread.start()
+            delete_thread.start()
 
         st_image.image(timer_frame)

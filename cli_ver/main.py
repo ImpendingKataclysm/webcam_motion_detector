@@ -1,9 +1,9 @@
 import glob
-
 import cv2
 import time
 from emailer import send_email
 from empty_folder import delete_images
+from threading import Thread
 
 video = cv2.VideoCapture(0)
 time.sleep(1)
@@ -53,8 +53,13 @@ while True:
     status_list = status_list[-2:]
 
     if status_list[0] == 1 and status_list[1] == 0:
-        send_email(img_with_obj)
-        delete_images()
+        email_thread = Thread(target=send_email, args=(img_with_obj, ))
+        email_thread.daemon = True
+        delete_thread = Thread(target=delete_images)
+        delete_thread.daemon = True
+
+        email_thread.start()
+        delete_thread.start()
 
     cv2.imshow("Video", frame)
 
