@@ -1,3 +1,5 @@
+import glob
+
 import cv2
 import time
 from emailer import send_email
@@ -38,8 +40,12 @@ while True:
 
         if rectangle.any():
             status = 1
+
             cv2.imwrite(f"images/{count}.png", frame)
-            count = count + 1
+            all_images = glob.glob("images/*.png")
+            img_index = int(len(all_images) / 2)
+            img_with_obj = all_images[img_index]
+            count += 1
 
     status_list.append(status)
     status_list = status_list[-2:]
