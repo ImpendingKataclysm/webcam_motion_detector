@@ -41,6 +41,7 @@ while True:
         if rectangle.any():
             status = 1
 
+            # Store images of moving objects
             cv2.imwrite(f"images/{count}.png", frame)
             all_images = glob.glob("images/*.png")
             img_index = int(len(all_images) / 2)

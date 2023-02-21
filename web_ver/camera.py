@@ -1,3 +1,5 @@
+import glob
+
 import streamlit as st
 import cv2
 from datetime import datetime
@@ -11,8 +13,10 @@ if start:
     st_image = st.image([])
     camera = cv2.VideoCapture(0)
     stop = st.button("Stop Camera", key="stop")
+
     first_frame = None
     status_list = []
+    count = 1
 
     while recording:
         status = 0
@@ -56,6 +60,12 @@ if start:
             # Check if there are moving objects
             if rectangle.any():
                 status = 1
+
+                cv2.imwrite(f"images/{count}.png", timer_frame)
+                all_images = glob.glob("images/*.png")
+                img_index = int(len(all_images) / 2)
+                img_with_obj = all_images[img_index]
+                count += 1
 
         # Compare current frame with previous one
         status_list.append(status)
