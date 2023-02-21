@@ -73,6 +73,6 @@ if start:
 
         # Send email if the previous frame had an object and the current one does not
         if status_list[0] == 1 and status_list[1] == 0:
-            send_email()
+            send_email(img_with_obj)
 
         st_image.image(timer_frame)
