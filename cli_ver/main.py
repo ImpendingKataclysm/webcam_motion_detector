@@ -59,7 +59,6 @@ while True:
         delete_thread.daemon = True
 
         email_thread.start()
-        delete_thread.start()
 
     cv2.imshow("Video", frame)
 
@@ -69,3 +68,4 @@ while True:
         break
 
 video.release()
+delete_thread.start()
